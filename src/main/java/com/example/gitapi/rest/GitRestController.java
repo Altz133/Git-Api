@@ -17,7 +17,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/api")
 public class GitRestController {
-
     private String authToken;
 
     @GetMapping(value = "/{username}",produces = MediaType.APPLICATION_JSON_VALUE)
