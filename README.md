@@ -1,6 +1,6 @@
 # Git-Api
 ### Description
-The Git-Api is a Java Spring REST API program designed to interact with the official GitHub API [GitHub RestAPI] (https://docs.github.com/en/rest?apiVersion=2022-11-28 GitHub RestAPI documentation).
+The Git-Api is a Java Spring REST API program designed to interact with the official GitHub API [GitHub RestAPI](https://docs.github.com/en/rest?apiVersion=2022-11-28 GitHub RestAPI documentation).
 Its main purpose is to retrieve information about repositories based on a provided GitHub username.
 The API exposes a single endpoint that returns a list of repositories, including details such as the owner's username, all branch names, and the last commit SHA.
 Also, it excludes any repositories that are identified as forks.
@@ -34,7 +34,7 @@ git clone https://github.com/Altz133/Git-Api.git
 
 Navigate to the project directory and build the application using Maven:
 ```
-cd cinema
+cd Git-api
 mvn clean install
 ```
 
