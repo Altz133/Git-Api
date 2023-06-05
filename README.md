@@ -5,6 +5,7 @@ Its main purpose is to retrieve information about repositories based on a provid
 The API exposes a single endpoint that returns a list of repositories, including details such as the owner's username, all branch names, and the last commit SHA.
 Also, it excludes any repositories that are identified as forks.
 
+### Endpoint
 
 ```
 localhost:8080/api/{username}
