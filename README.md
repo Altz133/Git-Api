@@ -1,6 +1,6 @@
 # Git-Api
 ### Description
-The Git-Api is a Java Spring REST API program designed to interact with the official GitHub API [GitHub RestAPI].
+The Git-Api is a Java Spring REST API program designed to interact with the official [GitHub RestAPI].
 Its main purpose is to retrieve information about repositories based on a provided GitHub username.
 The API exposes a single endpoint that returns a list of repositories, including details such as the owner's username, all branch names, and the last commit SHA.
 Also, it excludes any repositories that are identified as forks.
@@ -51,4 +51,4 @@ The application will start on `http://localhost:8080`.
 
 Open your web browser and access the application at `http://localhost:8080/api/{GitHub_username}`.
 
-[GitHub RestAPI]: http://slashdot.org](https://docs.github.com/en/rest?apiVersion=2022-11-28
+[GitHub RestAPI]: https://docs.github.com/en/rest?apiVersion=2022-11-28
