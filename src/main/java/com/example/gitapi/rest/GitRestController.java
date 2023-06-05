@@ -3,78 +3,72 @@ package com.example.gitapi.rest;
 
 import com.example.gitapi.entity.Branch;
 import com.example.gitapi.entity.Repo;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api")
 public class GitRestController {
-    @GetMapping("/{username}")
-    public ResponseEntity<List<Repo>> getReposVar(@PathVariable("username") String user, @RequestHeader(value = "Accept", required = true) String header) throws JsonProcessingException {
-        String url = "https://api.github.com/users/" + user + "/repos";
-        System.out.println(url);
-        RestTemplate restTemplate = new RestTemplate();
+
+    private String authToken;
+
+    @GetMapping(value = "/{username}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Repo> getReposVar(@PathVariable("username") String user, @RequestHeader(HttpHeaders.ACCEPT) List<MediaType> header){
+        List<Repo> repos;
         HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON)); //Accept:application.Json
+
+        headers.setAccept(header);
+
+        File file = new File("E:\\Repos\\git-API\\Git-Api\\token.txt\\");
+        Scanner sc = null;
+
+        try {
+            sc = new Scanner(file);
+            sc.useDelimiter("\\Z");
+            this.authToken = sc.next();
+        } catch (FileNotFoundException e) {
+
+            throw new RuntimeException(e);
+        }
+
+        headers.setBearerAuth(authToken);
 
         HttpEntity request = new HttpEntity(headers);
 
-        Map<String,String> params = new HashMap<String, String>();
-        params.put("type","public");
-
-
-        ResponseEntity<List<Repo>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                new ParameterizedTypeReference<List<Repo>>() {
-                },
-                params
-        );
-        List<Repo> repos = response.getBody();
+        repos =  getCall(user, request, header);
 
         List<Branch> branches;
 
-
-        for(int i = 0; i< (repos != null ? repos.size() : 0); i++){
-            if(repos.get(i).getIsFork().equals("true") ) {
+        for (int i = 0; i < (repos != null ? repos.size() : 0); i++) {
+            if (repos.get(i).getIsFork().equals("true")) {
                 repos.remove(i);
             }
-
         }
-        for(int i = 0; i< (repos != null ? repos.size() : 0);i++){
-            System.out.println(repos.get(i));
+
+
+        for (int i = 0; i < (repos != null ? repos.size() : 0); i++) {
             branches = getBranches(repos.get(i));
             repos.get(i).setBranchList(branches);
         }
-
-
-
-        if(response.getStatusCode() == HttpStatus.OK) {
-            System.out.println("Request Successful");
-        }
-        else{
-            System.out.println("Request Failed");
-        }
-
-    return response;
+        return repos;
     }
 
-    private List<Branch> getBranches(Repo element){
-        String url = "https://api.github.com/repos/" + element.getOwnerLogin() + "/"+ element.getRepositoryName() + "/branches";
+    private List<Branch> getBranches(Repo element) {
+        String url = "https://api.github.com/repos/" + element.getOwnerLogin() + "/" + element.getRepositoryName() + "/branches";
         HttpHeaders headers = new HttpHeaders();
         RestTemplate restTemplate = new RestTemplate();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+
+        headers.setBearerAuth(authToken);
         HttpEntity request = new HttpEntity(headers);
 
         ResponseEntity<List<Branch>> response = restTemplate.exchange(
@@ -84,11 +78,33 @@ public class GitRestController {
                 new ParameterizedTypeReference<List<Branch>>() {
                 });
 
-        List<Branch> branches = response.getBody();
-        for(int i = 0; i< branches.size(); i++){
-            System.out.println(branches.get(i));
-        }
-        return branches;
+        return response.getBody();
     }
+
+    private List<Repo> getCall(String user, HttpEntity request, List<MediaType> header) {
+      List<Repo> temp = new ArrayList<Repo>();
+        String url = "https://api.github.com/users/" + user + "/repos";
+
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<List<Repo>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    request,
+                    new ParameterizedTypeReference<List<Repo>>() {
+                    }
+            );
+            List<Repo> repo = response.getBody();
+            return repo;
+
+        } catch (HttpStatusCodeException exception) {
+            int statusCode = exception.getStatusCode().value();
+            if (statusCode == 404) {
+                throw new UserNotFound("Username " + user + " not found on github");
+            }
+        }
+        return temp;
+    }
+
 
 }

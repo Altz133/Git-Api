@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonPropertyOrder({"repositoryName","ownerLogin", "branchList"})
 public class Repo {
 
     @JsonProperty("name")
@@ -20,7 +21,7 @@ public class Repo {
     private void unpackNameFromNestedObject(Map<String, String> owner){
         ownerLogin=owner.get("login");
     }
-    @JsonProperty("fork")
+    @JsonProperty(value = "fork",access = JsonProperty.Access.WRITE_ONLY)
     private String isFork;
 
     private List<Branch> branchList;
@@ -61,7 +62,6 @@ public class Repo {
         return "Repo{" +
                 "repositoryName='" + repositoryName + '\'' +
                 ", ownerLogin='" + ownerLogin + '\'' +
-                ", isFork='" + isFork + '\'' +
                 ", branchList=" + branchList +
                 '}';
     }

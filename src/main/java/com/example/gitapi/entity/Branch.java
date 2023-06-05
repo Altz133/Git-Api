@@ -1,9 +1,11 @@
 package com.example.gitapi.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.Map;
 
+@JsonPropertyOrder({"branchName","lastCommitSha"})
 public class Branch {
 
     @JsonProperty("name")
