@@ -7,7 +7,13 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+/*
+repositoryName - contains name of repository
+ownerLogin - contains GitHUb username of the repository owner
+isFork - tells about if current repository is a fork or not
+branchList - contains information about every branch in repository
 
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({"repositoryName","ownerLogin", "branchList"})
 public class Repo {
@@ -22,16 +28,16 @@ public class Repo {
         ownerLogin=owner.get("login");
     }
     @JsonProperty(value = "fork",access = JsonProperty.Access.WRITE_ONLY)
-    private String isFork;
+    private boolean isFork;
 
     private List<Branch> branchList;
 
 
-    public String getIsFork() {
+    public boolean getIsFork() {
         return isFork;
     }
 
-    public void setIsFork(String isFork) {
+    public void setIsFork(boolean isFork) {
         this.isFork = isFork;
     }
 

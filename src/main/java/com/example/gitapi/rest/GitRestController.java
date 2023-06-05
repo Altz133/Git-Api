@@ -27,7 +27,9 @@ public class GitRestController {
 
         headers.setAccept(header);
 
-        File file = new File("E:\\Repos\\git-API\\Git-Api\\token.txt\\");
+        //authentication
+        //Put OAuth GitHub access token inside token.txt file in root directory
+        File file = new File("token.txt");
         Scanner sc = null;
 
         try {
@@ -47,13 +49,14 @@ public class GitRestController {
 
         List<Branch> branches;
 
+        //responsible for removing forks form the list of repositories
         for (int i = 0; i < (repos != null ? repos.size() : 0); i++) {
-            if (repos.get(i).getIsFork().equals("true")) {
+            if (repos.get(i).getIsFork()) {
                 repos.remove(i);
             }
         }
 
-
+        //gets list of branches names and last commit SHA for every repository
         for (int i = 0; i < (repos != null ? repos.size() : 0); i++) {
             branches = getBranches(repos.get(i));
             repos.get(i).setBranchList(branches);
@@ -61,28 +64,8 @@ public class GitRestController {
         return repos;
     }
 
-    private List<Branch> getBranches(Repo element) {
-        String url = "https://api.github.com/repos/" + element.getOwnerLogin() + "/" + element.getRepositoryName() + "/branches";
-        HttpHeaders headers = new HttpHeaders();
-        RestTemplate restTemplate = new RestTemplate();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-
-        headers.setBearerAuth(authToken);
-        HttpEntity request = new HttpEntity(headers);
-
-        ResponseEntity<List<Branch>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                new ParameterizedTypeReference<List<Branch>>() {
-                });
-
-        return response.getBody();
-    }
-
     private List<Repo> getCall(String user, HttpEntity request, List<MediaType> header) {
-      List<Repo> temp = new ArrayList<Repo>();
+        List<Repo> temp = new ArrayList<Repo>();
         String url = "https://api.github.com/users/" + user + "/repos";
 
         try {
@@ -105,6 +88,27 @@ public class GitRestController {
         }
         return temp;
     }
+
+    private List<Branch> getBranches(Repo element) {
+        String url = "https://api.github.com/repos/" + element.getOwnerLogin() + "/" + element.getRepositoryName() + "/branches";
+        HttpHeaders headers = new HttpHeaders();
+        RestTemplate restTemplate = new RestTemplate();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+
+        headers.setBearerAuth(authToken);
+        HttpEntity request = new HttpEntity(headers);
+
+        ResponseEntity<List<Branch>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                new ParameterizedTypeReference<List<Branch>>() {
+                });
+
+        return response.getBody();
+    }
+
 
 
 }

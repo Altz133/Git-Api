@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.Map;
-
+/*
+branchName- contains name of the branch
+lastCommitSha - contains last commit SHA of current branch
+ */
 @JsonPropertyOrder({"branchName","lastCommitSha"})
 public class Branch {
 

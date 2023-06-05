@@ -1,5 +1,6 @@
 package com.example.gitapi.rest;
 
+// user error response entity responsible for forming 404 exception response
 public class UserErrorResponse {
     private int status;
     private String message;
