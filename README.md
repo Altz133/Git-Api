@@ -21,8 +21,8 @@ localhost:8080/api/{username}
 - Java Development Kit (JDK) 8 or higher
 - Maven
 - Git
+- GitHub OAuth access token (to generate one go to: github account settings -> developer settins -> personal access tokens ->Tokens(classic)).
 
-GitHub OAuth access token (to generate one go to: github account settings -> developer settins -> personal access tokens ->Tokens(classic))
 Token have to be placed inside "token.txt" file in root direcotry.
 
 ### Clone the Repository
