@@ -8,9 +8,10 @@ import lombok.NoArgsConstructor;
 
 
 
+
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record Owner(String login) {
-    public Owner {
+public record Commit(String sha) {
+    public Commit {
     }
 }

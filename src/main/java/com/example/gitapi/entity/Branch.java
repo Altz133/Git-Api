@@ -1,47 +1,25 @@
 package com.example.gitapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Map;
 /*
 branchName- contains name of the branch
 lastCommitSha - contains last commit SHA of current branch
  */
-@JsonPropertyOrder({"branchName","lastCommitSha"})
-public class Branch {
 
-    @JsonProperty("name")
-    private String branchName;
 
-    private String lastCommitSha;
 
-    @JsonProperty("commit")
-    private void unpackShaFroCommit(Map<String, String> commit){
-        lastCommitSha=commit.get("sha");
-    }
 
-    public String getBranchName() {
-        return branchName;
-    }
-
-    public void setBranchName(String branchName) {
-        this.branchName = branchName;
-    }
-
-    public String getLastCommitSha() {
-        return lastCommitSha;
-    }
-
-    public void setLastCommitSha(String lastCommitSha) {
-        this.lastCommitSha = lastCommitSha;
-    }
-
-    @Override
-    public String toString() {
-        return "Branch{" +
-                "branchName='" + branchName + '\'' +
-                ", lastCommitSha='" + lastCommitSha + '\'' +
-                '}';
+@Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record Branch(String name, Commit commit) {
+    public Branch {
     }
 }
