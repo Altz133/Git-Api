@@ -1,6 +1,7 @@
 package com.example.gitapi.service;
 import com.example.gitapi.entity.Branch;
 import com.example.gitapi.entity.Repo;
+import com.example.gitapi.rest.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -49,7 +51,7 @@ public class GitAPIServiceImpl implements GitAPIService{
         return authToken;
     }
 
-    public Flux<Repo> getRepositoriesByName(String name){
+    public Flux<Repo> getRepositoriesByName(String name) throws EntityNotFoundException{
         return this.webClient.get().uri("/users/{name}/repos", name)
                 .retrieve()
                 .bodyToFlux(Repo.class);
@@ -65,20 +67,16 @@ public class GitAPIServiceImpl implements GitAPIService{
     }
     public Flux<Repo> getBranchesForRepo(String name){
         return getRepositoriesByName(name).flatMap(repo -> Flux
-                .zip(Flux.just(repo),getBranches(repo.owner()
+                .zip(Flux.just(repo), getBranches(repo.owner()
                         .login(), repo.name())
                         .defaultIfEmpty(new ArrayList<Branch>()))
-                .map(tuple->{
+                .map(tuple -> {
                     log.info("number of branches: " + tuple.getT2().size());
                     return Repo.builder().name(tuple.getT1().name())
                             .owner(tuple.getT1().owner())
                             .fork(tuple.getT1().fork())
                             .branch(tuple.getT2()).build();
                 }));
-//        return this.webClient.get().uri("/repos/{name}/{repo}/branches",repository.owner().login(),repository.name())
-//                .retrieve()
-//                .bodyToFlux(Branch.class);
-
     }
 
     public Flux<Repo> getRepositoriesByNameWithoutForks(String name){
