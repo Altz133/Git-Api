@@ -67,7 +67,6 @@ public class GitAPIServiceImpl implements GitAPIService{
         return webClient.get()
                 .uri("/repos/{name}/{repo}/branches", name,repo)
                 .retrieve()
-//                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.empty())
                 .bodyToMono(listParameterizedTypeReference);
     }
     public Flux<Repo> getBranchesForRepo(String name){
