@@ -21,6 +21,7 @@ public class ApiErrorResponse {
 
     public ApiErrorResponse(HttpStatus status) {
         this.status = status;
+        tiemstamp =LocalDateTime.now();
     }
 
     public ApiErrorResponse(HttpStatus status, Throwable ex) {
@@ -28,6 +29,7 @@ public class ApiErrorResponse {
         this.status = status;
         this.message = "Unexpected error";
         this.debugMessage = ex.getLocalizedMessage();
+        tiemstamp =LocalDateTime.now();
     }
 
     public ApiErrorResponse(HttpStatus status, String message,Throwable ex) {
@@ -35,5 +37,6 @@ public class ApiErrorResponse {
         this.status = status;
         this.message = message;
         this.debugMessage = ex.getLocalizedMessage();
+        tiemstamp =LocalDateTime.now();
     }
 }

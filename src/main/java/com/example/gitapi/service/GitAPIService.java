@@ -8,6 +8,5 @@ import java.util.List;
 
 public interface GitAPIService {
     public Flux<Repo> getRepositoriesByName(String user);
-    public Flux<Repo> getRepositoriesByNameWithoutForks(String name);
     Flux<Repo> getBranchesForRepo(String name);
 }

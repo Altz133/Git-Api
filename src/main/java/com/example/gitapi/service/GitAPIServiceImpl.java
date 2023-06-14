@@ -2,12 +2,15 @@ package com.example.gitapi.service;
 import com.example.gitapi.entity.Branch;
 import com.example.gitapi.entity.Repo;
 import com.example.gitapi.rest.EntityNotFoundException;
+import io.netty.handler.codec.http.multipart.HttpPostMultipartRequestDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
@@ -21,8 +24,9 @@ import java.util.*;
 public class GitAPIServiceImpl implements GitAPIService{
 
     private String authToken;
-    private final WebClient webClient;
+    private WebClient webClient;
     Logger log = LoggerFactory.getLogger(GitAPIServiceImpl.class);
+    private HttpStatus status;
 
     @Autowired
     public GitAPIServiceImpl(WebClient.Builder builder) {
@@ -51,9 +55,10 @@ public class GitAPIServiceImpl implements GitAPIService{
         return authToken;
     }
 
-    public Flux<Repo> getRepositoriesByName(String name) throws EntityNotFoundException{
+    public Flux<Repo> getRepositoriesByName(String name) throws EntityNotFoundException {
         return this.webClient.get().uri("/users/{name}/repos", name)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(EntityNotFoundException::new))
                 .bodyToFlux(Repo.class);
     }
     public Mono<List<Branch>> getBranches(String name, String repo){
@@ -66,7 +71,8 @@ public class GitAPIServiceImpl implements GitAPIService{
                 .bodyToMono(listParameterizedTypeReference);
     }
     public Flux<Repo> getBranchesForRepo(String name){
-        return getRepositoriesByName(name).flatMap(repo -> Flux
+        return getRepositoriesByName(name).filter(f->!f.fork())
+                .flatMap(repo -> Flux
                 .zip(Flux.just(repo), getBranches(repo.owner()
                         .login(), repo.name())
                         .defaultIfEmpty(new ArrayList<Branch>()))
@@ -79,8 +85,5 @@ public class GitAPIServiceImpl implements GitAPIService{
                 }));
     }
 
-    public Flux<Repo> getRepositoriesByNameWithoutForks(String name){
-        return getRepositoriesByName(name).log().filter(c-> !c.fork());
-    }
 
 }

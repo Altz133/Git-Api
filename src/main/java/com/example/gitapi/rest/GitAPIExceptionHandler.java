@@ -23,7 +23,8 @@ public class GitAPIExceptionHandler extends ResponseEntityExceptionHandler
     @ExceptionHandler(EntityNotFoundException.class)
     protected ResponseEntity<ApiErrorResponse> handleEntityNotFound(EntityNotFoundException ex){
         ApiErrorResponse apiError = new ApiErrorResponse(HttpStatus.NOT_FOUND);
-        apiError.setMessage(ex.getMessage());
+        apiError.setDebugMessage(ex.getLocalizedMessage());
+        apiError.setMessage("Provided user was not found");
         return buildResponseEntity(apiError);
     }
 

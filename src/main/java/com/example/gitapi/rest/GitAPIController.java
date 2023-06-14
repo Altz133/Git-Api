@@ -10,6 +10,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 
 
@@ -31,7 +32,8 @@ public class GitAPIController {
 
     @GetMapping(value = "/{username}")
     public Flux<Repo> getReposVar(@PathVariable("username") String user){
-        return gitAPIService.getBranchesForRepo(user);
+            return gitAPIService.getBranchesForRepo(user);
+
     }
 
 
